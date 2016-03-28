@@ -15,6 +15,7 @@ import com.leprechaun.solveig.http.RequestExecutor;
 
 public class DatabaseControl {
     
+    //Databases
     public static ResponseEntity showDatabases(String host, String port) {
         return RequestExecutor.getExecutor(host, port, "SHOW%20DATABASES");
     }
@@ -25,6 +26,19 @@ public class DatabaseControl {
     
     public static ResponseEntity dropDatabase(String host, String port, String databaseName) {
         return RequestExecutor.getExecutor(host, port, "DROP%20DATABASE%20" + databaseName);
+    }
+    
+    //Users
+    public static ResponseEntity showUsers(String host, String port) {
+        return RequestExecutor.getExecutor(host, port, "SHOW%20USERS");
+    }
+    
+    public static ResponseEntity createUser(String host, String port, String userName, String userPassword) {
+        return RequestExecutor.getExecutor(host, port, "CREATE+USER+%22" + userName +"%22+WITH+PASSWORD+%27" + userPassword + "%27&db=_internal");
+    }
+    
+    public static ResponseEntity dropUser(String host, String port, String userName) {
+        return RequestExecutor.getExecutor(host, port, "DROP+USER+%22" + userName +"%22&db=_internal");
     }
     
 }

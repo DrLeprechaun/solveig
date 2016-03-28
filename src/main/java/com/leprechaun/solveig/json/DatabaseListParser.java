@@ -22,9 +22,9 @@ public class DatabaseListParser {
         List<String> databaseList = new ArrayList();
         Gson gson = new Gson();
 
-        ShowDatabasesResult showDataaseResult = gson.fromJson(jsonString, ShowDatabasesResult.class);
+        ShowDatabasesResult showDatabaseResult = gson.fromJson(jsonString, ShowDatabasesResult.class);
 
-        for (Results results : showDataaseResult.getResults()) {
+        for (Results results : showDatabaseResult.getResults()) {
             for (Series series : results.getSeries()) {
                 for (List<String> values : series.getValues()) {
                     for (String str : values) {
