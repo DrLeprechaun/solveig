@@ -19,8 +19,7 @@
                         <Button fx:id="createDatabaseButton" layoutX="275.0" layoutY="82.0" mnemonicParsing="false" onAction="#createDatabase" prefHeight="25.0" prefWidth="199.0" text="CREATE DATABASE" />
                         <TextField fx:id="createDatabaseName" layoutX="276.0" layoutY="44.0" prefHeight="25.0" prefWidth="199.0" promptText="database name" />
                         <Separator layoutX="492.0" layoutY="7.0" orientation="VERTICAL" prefHeight="460.0" prefWidth="5.0" />
-                        <ChoiceBox fx:id="dropDatabaseList" layoutX="275.0" layoutY="141.0" onMousePressed="#chooseDatabasesToDrop" prefHeight="25.0" prefWidth="199.0" />
-                        <Button fx:id="dropDatabaseButton" layoutX="276.0" layoutY="180.0" mnemonicParsing="false" onAction="#dropDatabase" prefHeight="25.0" prefWidth="199.0" text="DROP DATABASE" />
+                        <Button fx:id="dropDatabaseButton" layoutX="276.0" layoutY="150.0" mnemonicParsing="false" onAction="#dropDatabase" prefHeight="25.0" prefWidth="199.0" text="DROP DATABASE" />
                         <ListView fx:id="databaseList" layoutX="38.0" layoutY="82.0" prefHeight="143.0" prefWidth="200.0" />
                         <Separator layoutX="276.0" layoutY="121.0" prefWidth="200.0" />
                         <Separator layoutX="11.0" layoutY="245.0" prefHeight="3.0" prefWidth="471.0" />
@@ -34,6 +33,7 @@
                               <TextField fx:id="hostField" layoutX="136.0" layoutY="57.0" promptText="host name / ip" text="10.161.28.157" />
                               <Label layoutX="129.0" layoutY="21.0" text="Connection Settings:" />
                               <Separator layoutX="87.0" layoutY="133.0" prefWidth="200.0" />
+                              <Button fx:id="saveConfigsButton" layoutX="222.0" layoutY="232.0" mnemonicParsing="false" onAction="#saveConnectionConfigs" prefHeight="25.0" prefWidth="68.0" text="Save" />
                            </children>
                         </Pane>
                         <PasswordField fx:id="passwordField" layoutX="650.0" layoutY="212.0" promptText="password (optional)" />
@@ -44,16 +44,9 @@
                         <TextField fx:id="userPassword" layoutX="279.0" layoutY="308.0" prefHeight="25.0" prefWidth="195.0" promptText="password" />
                         <Button fx:id="createUserButton" layoutX="277.0" layoutY="342.0" mnemonicParsing="false" onAction="#createUser" prefHeight="25.0" prefWidth="197.0" text="CREATE USER" />
                         <Separator layoutX="276.0" layoutY="387.0" prefWidth="200.0" />
-                        <ChoiceBox fx:id="dropUserList" layoutX="275.0" layoutY="404.0" onMousePressed="#chooseUserToDrop" prefHeight="25.0" prefWidth="203.0" />
-                        <Button fx:id="dropUserButton" layoutX="275.0" layoutY="442.0" mnemonicParsing="false" onAction="#dropUser" prefHeight="25.0" prefWidth="203.0" text="DROP USER" />
+                        <Button fx:id="dropUserButton" layoutX="275.0" layoutY="418.0" mnemonicParsing="false" onAction="#dropUser" prefHeight="25.0" prefWidth="203.0" text="DROP USER" />
                         <ListView fx:id="userList" layoutX="38.0" layoutY="307.0" prefHeight="160.0" prefWidth="203.0" />
-                        <Button fx:id="showUsersButton" layoutX="38.0" layoutY="270.0" mnemonicParsing="false" onAction="#showUsersRequest" prefHeight="25.0" prefWidth="202.0" text="SHOW USERS" />
-                        <TableView fx:id="usersTable" layoutX="516.0" layoutY="267.0" prefHeight="200.0" prefWidth="200.0">
-                          <columns>
-                            <TableColumn prefWidth="109.0" text="name" />
-                            <TableColumn prefWidth="90.0" text="admin" />
-                          </columns>
-                        </TableView>                   
+                        <Button fx:id="showUsersButton" layoutX="38.0" layoutY="270.0" mnemonicParsing="false" onAction="#showUsersRequest" prefHeight="25.0" prefWidth="202.0" text="SHOW USERS" />                   
                      </children>
                   </AnchorPane>
             </content>
@@ -62,7 +55,20 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                       
+                        <TabPane layoutX="189.0" layoutY="156.0" prefHeight="238.0" prefWidth="474.0" tabClosingPolicy="UNAVAILABLE">
+                          <tabs>
+                            <Tab text="Table">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                              </content>
+                            </Tab>
+                            <Tab text="Raw">
+                              <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                              </content>
+                            </Tab>
+                          </tabs>
+                        </TabPane>
                      </children></AnchorPane>
             </content>
           </Tab>

@@ -39,7 +39,7 @@ public class UserEntity {
     /**
      * @return the adminFlag
      */
-    public boolean isAdminFlag() {
+    public boolean getAdminFlag() {
         return adminFlag;
     }
 

@@ -20,18 +20,17 @@ import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Pane;
-import javafx.scene.control.TableView;
 import com.leprechaun.solveig.entities.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
-
-
+import com.leprechaun.solveig.entities.UserEntity;
+import javafx.collections.ObservableList;
+import javafx.collections.FXCollections;
 
 public class FXMLController implements Initializable {
-    
+
     //Main control tab
     @FXML
     private TextArea outputConsole;
@@ -49,32 +48,36 @@ public class FXMLController implements Initializable {
     private Button dropDatabaseButton;
     @FXML
     private Button exitButton;
-    @FXML
-    private ChoiceBox dropDatabaseList;
+
     @FXML
     private ListView databaseList;
-    
+
     @FXML
     private Pane connectionSettingsPane;
-    
+
     @FXML
     private Button createUserButton;
     @FXML
-    private Button dropUserButton; 
+    private Button dropUserButton;
     @FXML
     private ListView userList;
-    @FXML
-    private ChoiceBox dropUserList;
     @FXML
     private TextField userName;
     @FXML
     private TextField userPassword;
+
     @FXML
-    private TableView usersTable;
-    
-    
+    private TextField usernameField;
+    @FXML
+    private TextField passwordField;
+    @FXML
+    private Button saveConfigsButton;
+
+    //Data containers
+    private ObservableList<UserEntity> usersDataList = FXCollections.observableArrayList();
+    private ObservableList<String> databasesDataList = FXCollections.observableArrayList();
+
     //Button actions
-    
     //Databases
     //Show databases
     @FXML
@@ -83,59 +86,41 @@ public class FXMLController implements Initializable {
         outputConsole.appendText("SHOW DATABASES: " + responseEntity.getCode() + ": " + responseEntity.getBody() + "\n");
         if (responseEntity.getCode().contains("200")) {
             try {
+                databasesDataList.clear();
                 databaseList.getItems().clear();
-                dropDatabaseList.getItems().clear();
                 for (String str : DatabaseListParser.databaseStringList(responseEntity.getBody())) {
-                    databaseList.getItems().add(str);
+                    databasesDataList.add(str);
                 }
+                databaseList.setItems(databasesDataList);
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
     }
-    
+
     //Create database
     @FXML
     private void createDatabase(ActionEvent event) {
         ResponseEntity responseEntity = DatabaseControl.createDatabase(hostField.getText(), portField.getText(), createDatabaseName.getText());
         outputConsole.appendText("CREATE DATABASE: " + responseEntity.getCode() + ": " + responseEntity.getBody() + "\n");
     }
-    
-    //Choose database to drop
-    @FXML
-    private void chooseDatabasesToDrop() {
-        ResponseEntity responseEntity = DatabaseControl.showDatabases(hostField.getText(), portField.getText());
-        outputConsole.appendText("Get database list to drop: " + responseEntity.getCode() + ": " + "\n");
-        if (responseEntity.getCode().contains("200")) {
-            try {
-                dropDatabaseList.getItems().clear();
-                for (String str : DatabaseListParser.databaseStringList(responseEntity.getBody())) {                 
-                    dropDatabaseList.getItems().add(str);
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-    }
-    
+
     //Drop database
     @FXML
-    private void dropDatabase (ActionEvent event) {
-        
+    private void dropDatabase(ActionEvent event) {
+
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirm drop");
         alert.setHeaderText("Confirm drop");
-        alert.setContentText("Drop database " + dropDatabaseList.getValue().toString() + "?");
+        alert.setContentText("Drop database " + databaseList.getSelectionModel().getSelectedItem().toString() + "?");
         Optional<ButtonType> result = alert.showAndWait();
-        
-        if (result.get() == ButtonType.OK){
-            ResponseEntity responseEntity = DatabaseControl.dropDatabase(hostField.getText(), portField.getText(), dropDatabaseList.getValue().toString());
-            outputConsole.appendText("DROP DATABASE " + dropDatabaseList.getValue().toString() + ": " + responseEntity.getCode() + ": " + responseEntity.getBody() + "\n");
+
+        if (result.get() == ButtonType.OK) {
+            ResponseEntity responseEntity = DatabaseControl.dropDatabase(hostField.getText(), portField.getText(), databaseList.getSelectionModel().getSelectedItem().toString());
+            outputConsole.appendText("DROP DATABASE " + databaseList.getSelectionModel().getSelectedItem().toString() + ": " + responseEntity.getCode() + ": " + responseEntity.getBody() + "\n");
         }
     }
-    
-    
-    
+
     //Users
     //Show users
     @FXML
@@ -145,97 +130,97 @@ public class FXMLController implements Initializable {
         if (responseEntity.getCode().contains("200")) {
             try {
                 userList.getItems().clear();
-                dropUserList.getItems().clear();
-                
-                //usersTable.getInsets().
-                
-                //usersTable.
-                //for (String str : UserListParser.userStringList(responseEntity.getBody())) {
-                    //userList.getItems().add(str);
-                //}
-                
-                
+                usersDataList.clear();
+
                 for (UserEntity userEntity : UserListParser.userStringList(responseEntity.getBody())) {
-                    //List fill
-                    userList.getItems().add(userEntity.getName());
-                    
-                    //Table fill
-                    //usersTable.g
-                }             
+                    usersDataList.add(new UserEntity(userEntity.getName(), userEntity.getAdminFlag()));
+                }
+
+                for (UserEntity ue : usersDataList) {
+                    userList.getItems().add(ue.getName());
+                }
+
             } catch (Exception e) {
                 System.out.println(e);
             }
         }
     }
-    
+
     //Create user
     @FXML
     private void createUser(ActionEvent event) {
         ResponseEntity responseEntity = DatabaseControl.createUser(hostField.getText(), portField.getText(), userName.getText(), userPassword.getText());
         outputConsole.appendText("CREATE USER: " + responseEntity.getCode() + ": " + responseEntity.getBody() + "\n");
     }
-    
-    //Choose database to drop
-    @FXML
-    private void chooseUserToDrop() {
-        ResponseEntity responseEntity = DatabaseControl.showUsers(hostField.getText(), portField.getText());
-        outputConsole.appendText("Get user list to drop: " + responseEntity.getCode() + ": " + "\n");
-        if (responseEntity.getCode().contains("200")) {
-            try {
-                dropUserList.getItems().clear();
-                /*for (String str : UserListParser.userStringList(responseEntity.getBody())) {                 
-                    dropUserList.getItems().add(str);
-                }*/
-                for (UserEntity userEntity : UserListParser.userStringList(responseEntity.getBody())) {                 
-                    dropUserList.getItems().add(userEntity.getName());
-                }
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-    }
-    
+
     //Drop database
     @FXML
-    private void dropUser (ActionEvent event) {
-        
+    private void dropUser(ActionEvent event) {
+
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirm drop");
         alert.setHeaderText("Confirm drop");
-        alert.setContentText("Drop user " + dropUserList.getValue().toString() + "?");
+        alert.setContentText("Drop user " + userList.getSelectionModel().getSelectedItem().toString() + "?");
         Optional<ButtonType> result = alert.showAndWait();
-        
-        if (result.get() == ButtonType.OK){
-            ResponseEntity responseEntity = DatabaseControl.dropUser(hostField.getText(), portField.getText(), dropUserList.getValue().toString());
-            outputConsole.appendText("DROP USER " + dropUserList.getValue().toString() + ": " + responseEntity.getCode() + ": " + responseEntity.getBody() + "\n");
+
+        if (result.get() == ButtonType.OK) {
+            ResponseEntity responseEntity = DatabaseControl.dropUser(hostField.getText(), portField.getText(), userList.getSelectionModel().getSelectedItem().toString());
+            outputConsole.appendText("DROP USER " + userList.getSelectionModel().getSelectedItem().toString() + ": " + responseEntity.getCode() + ": " + responseEntity.getBody() + "\n");
         }
     }
-    
-    
+
+    //Save connection configs
+    @FXML
+    private void saveConnectionConfigs(ActionEvent event) {
+        try {
+            ConfigManager configManager = new ConfigManager();
+            configManager.writeConnectionProperties(hostField.getText(), portField.getText(), usernameField.getText(), passwordField.getText());
+
+            outputConsole.appendText("Connection settings are succesfully saved \n");
+        } catch (Exception e) {
+            outputConsole.appendText("Error while saving connection settings \n");
+        }
+    }
+
     //Clear output console
     @FXML
-    private void clearOutputConsole (ActionEvent event) {
+    private void clearOutputConsole(ActionEvent event) {
         outputConsole.clear();
     }
-    
+
     //Exit application
     @FXML
-    private void exitApplication (ActionEvent event) {
+    private void exitApplication(ActionEvent event) {
         Stage stage = (Stage) exitButton.getScene().getWindow();
         stage.close();
     }
-    
+
     //Initialize
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         createDatabaseButton.setStyle("-fx-base: #d0d0e1;");
         dropDatabaseButton.setStyle("-fx-base: #ffccff;");
-        
+
         createUserButton.setStyle("-fx-base: #d0d0e1;");
         dropUserButton.setStyle("-fx-base: #ffccff;");
-        
+
         connectionSettingsPane.setStyle("-fx-background-color: #d0d0e1;");
-        
+
+        //Load connection settings
+        try {
+
+            ConfigManager configManager = new ConfigManager();
+
+            hostField.setText(configManager.readProperty("connection.properties", "host"));
+            portField.setText(configManager.readProperty("connection.properties", "port"));
+            usernameField.setText(configManager.readProperty("connection.properties", "username"));
+            passwordField.setText(configManager.readProperty("connection.properties", "password"));
+
+            outputConsole.appendText("Connection settings are succesfully loaded \n");
+        } catch (Exception e) {
+            outputConsole.appendText("Error while loading connection settings \n");
+        }
+
         outputConsole.setEditable(false);
-    }    
+    }
 }

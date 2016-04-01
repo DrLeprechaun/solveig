@@ -23,15 +23,12 @@ import com.leprechaun.solveig.entities.ResponseEntity;
 
 public class RequestExecutor {
     
-    //FXMLController fxmlController = new FXMLController();
-    
     public static ResponseEntity getExecutor(String host, String port, String query) {
         
         ResponseEntity responseEntity = new ResponseEntity();
         
         HttpClient client = new DefaultHttpClient();
         
-        //String url = "http://10.161.28.157:8086/query?db=testdb&q=" + query;
         String url = "http://" + host + ":" + port + "/query?db=testdb&q=" + query;
         
         System.out.println(url);
