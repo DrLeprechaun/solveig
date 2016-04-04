@@ -26,8 +26,12 @@ import com.leprechaun.solveig.entities.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 import com.leprechaun.solveig.entities.UserEntity;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Separator;
 
 public class FXMLController implements Initializable {
 
@@ -72,6 +76,18 @@ public class FXMLController implements Initializable {
     private TextField passwordField;
     @FXML
     private Button saveConfigsButton;
+
+    //
+    @FXML
+    private Pane queryPane;
+    @FXML
+    private TextField queryField;
+    @FXML
+    private Button executeButton;
+    @FXML
+    private ChoiceBox choiceDatabase;
+    @FXML
+    private ChoiceBox choiceQueryTemplate;
 
     //Data containers
     private ObservableList<UserEntity> usersDataList = FXCollections.observableArrayList();
@@ -182,6 +198,40 @@ public class FXMLController implements Initializable {
         }
     }
 
+    //TAB2
+    //Choose database to use
+    @FXML
+    private void chooseDatabaseToUse() {
+        /*
+         ResponseEntity responseEntity = DatabaseControl.showDatabases(hostField.getText(), portField.getText());
+         outputConsole.appendText("Get database list to drop: " + responseEntity.getCode() + ": " + "\n");
+         if (responseEntity.getCode().contains("200")) {
+         try {
+         choiceDatabase.getItems().clear();
+         for (String str : DatabaseListParser.databaseStringList(responseEntity.getBody())) {                 
+         choiceDatabase.getItems().add(str);
+         }
+         } catch (Exception e) {
+         System.out.println(e);
+         }
+         }
+         */
+        ResponseEntity responseEntity = DatabaseControl.showDatabases(hostField.getText(), portField.getText());
+        outputConsole.appendText("SHOW DATABASES (to USE): " + responseEntity.getCode() + ": " + responseEntity.getBody() + "\n");
+        if (responseEntity.getCode().contains("200")) {
+            try {
+                databasesDataList.clear();
+                databaseList.getItems().clear();
+                for (String str : DatabaseListParser.databaseStringList(responseEntity.getBody())) {
+                    databasesDataList.add(str);
+                }
+                choiceDatabase.setItems(databasesDataList);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
+
     //Clear output console
     @FXML
     private void clearOutputConsole(ActionEvent event) {
@@ -205,6 +255,84 @@ public class FXMLController implements Initializable {
         dropUserButton.setStyle("-fx-base: #ffccff;");
 
         connectionSettingsPane.setStyle("-fx-background-color: #d0d0e1;");
+
+        executeButton.setStyle("-fx-base: #d0d0e1;");
+        queryPane.setStyle("-fx-background-color: #d0d0e1;");
+
+        //Fill Query Template List
+        Separator listSeparator = new Separator();
+        choiceQueryTemplate.setItems(FXCollections.observableArrayList(
+                "SHOW DATABASES",
+                "CREATE DATABASE",
+                "DROP DATABASE",
+                listSeparator,
+                "SHOW SERIES",
+                "SHOW MEASUREMENTS",
+                "SHOW TAG KEYS",
+                "SHOW TAG VALUES",
+                listSeparator,
+                "SHOW RETENTIONS POLICIES",
+                "CREATE RETENTION POLICY",
+                "DROP RETENTION POLICY",
+                listSeparator,
+                "SHOW USERS",
+                "CREATE USER",
+                "CREATE ADMIN USER",
+                "DROP USER"
+        ));
+
+        //Query template listener
+        choiceQueryTemplate.getSelectionModel().selectedIndexProperty()
+                .addListener(new ChangeListener<Number>() {
+                    public void changed(ObservableValue ov, Number value, Number new_value) {
+                        queryField.clear();
+                        //queryField.setText("ololo");
+                        switch (choiceQueryTemplate.getSelectionModel().getSelectedIndex()) {
+                            case 0:
+                                queryField.setText("SHOW DATABASES");
+                                break;
+                            case 1:
+                                queryField.setText("CREATE DATABASE \"db_name\"");
+                                break;
+                            case 2:
+                                queryField.setText("DROP DATABASE \"db_name\"");
+                                break;
+                            case 4:
+                                queryField.setText("SHOW SERIES");
+                                break;
+                            case 5:
+                                queryField.setText("SHOW MEASUREMENTS");
+                                break;
+                            case 6:
+                                queryField.setText("SHOW TAG KEYS FROM \"measurement_name\"");
+                                break;
+                            case 7:
+                                queryField.setText("SHOW TAG VALUES FROM \"measurement_name\" WITH KEY = \"tag_key\"");
+                                break;
+                            case 9:
+                                queryField.setText("SHOW RETENTION POLICIES ON \"db_name\"");
+                                break;
+                            case 10:
+                                queryField.setText("CREATE RETENTION POLICY \"rp_name\" ON \"db_name\" DURATION 30d REPLICATION 1 DEFAULT");
+                                break;
+                            case 11:
+                                queryField.setText("DROP RETENTION POLICY \"rp_name\"");
+                                break;
+                            case 13:
+                                queryField.setText("SHOW USERS");
+                                break;
+                            case 14:
+                                queryField.setText("CREATE USER \"username\" WITH PASSWORD 'password'");
+                                break;
+                            case 15:
+                                queryField.setText("CREATE USER \"username\" WITH PASSWORD 'password' WITH ALL PRIVILEGES");
+                                break;
+                            case 16:
+                                queryField.setText("DROP USER \"username\"");
+                                break;
+                        }
+                    }
+                });
 
         //Load connection settings
         try {

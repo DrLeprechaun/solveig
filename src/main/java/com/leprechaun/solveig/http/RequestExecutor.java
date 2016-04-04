@@ -29,7 +29,9 @@ public class RequestExecutor {
         
         HttpClient client = new DefaultHttpClient();
         
-        String url = "http://" + host + ":" + port + "/query?db=testdb&q=" + query;
+        //String url = "http://" + host + ":" + port + "/query?db=testdb&q=" + query;
+        
+        String url = "http://" + host + ":" + port + "/query?q=" + query;
         
         System.out.println(url);
         
