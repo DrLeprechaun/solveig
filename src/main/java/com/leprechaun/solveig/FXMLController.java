@@ -241,14 +241,10 @@ public class FXMLController implements Initializable {
     }
     
     @FXML
-    private void executeRequest(ActionEvent event) {
+    private void executeRequest(ActionEvent event) throws Exception {
         ResponseEntity responseEntity = RequestExecutor.intermediateExcutor(hostField.getText(), portField.getText(), choiceDatabase.getSelectionModel().getSelectedItem().toString(), usernameField.getText(), passwordField.getText(), queryField.getText());
         if (responseEntity.getCode().contains("200")) {
             jsonRepresent.clear();
-            /*Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            String prettyJson = gson.toJson(responseEntity.getBody());
-            jsonRepresent.appendText(prettyJson);
-            System.out.print(prettyJson);*/
             jsonRepresent.appendText(JsonFormatter.jsonFormatter(responseEntity.getBody()));
         }    
         outputConsole.appendText(queryField.getText() + ": " + responseEntity.getCode() + " " + responseEntity.getBody() + "\n");
@@ -301,7 +297,9 @@ public class FXMLController implements Initializable {
                 "SHOW USERS",
                 "CREATE USER",
                 "CREATE ADMIN USER",
-                "DROP USER"
+                "DROP USER",
+                listSeparator,
+                "INSERT"
         ));
 
         //Query template listener
@@ -352,6 +350,9 @@ public class FXMLController implements Initializable {
                                 break;
                             case 16:
                                 queryField.setText("DROP USER \"username\"");
+                                break;
+                            case 18:
+                                queryField.setText("INSERT measurement,tag=1 value=2");
                                 break;
                         }
                     }
