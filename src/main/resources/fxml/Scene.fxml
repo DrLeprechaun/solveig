@@ -66,7 +66,10 @@
                                   </Tab>
                                   <Tab text="JSON">
                                     <content>
-                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <TextArea fx:id="jsonRepresent" layoutX="-1.0" prefHeight="323.0" prefWidth="872.0" />
+                                             </children></AnchorPane>
                                     </content>
                                   </Tab>
                                 </tabs>
@@ -74,7 +77,7 @@
                            </children>
                         </Pane>
                         <TextField fx:id="queryField" layoutX="19.0" layoutY="31.0" prefHeight="25.0" prefWidth="719.0" />
-                        <Button fx:id="executeButton" layoutX="763.0" layoutY="31.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="98.0" text="Execute" />
+                        <Button fx:id="executeButton" layoutX="763.0" layoutY="31.0" mnemonicParsing="false" onAction="#executeRequest" prefHeight="25.0" prefWidth="98.0" text="Execute" />
                         <ChoiceBox fx:id="choiceDatabase" layoutX="103.0" layoutY="74.0" onMousePressed="#chooseDatabaseToUse" prefWidth="150.0" />
                         <Label layoutX="19.0" layoutY="78.0" prefHeight="17.0" prefWidth="84.0" text="Use database:" />
                         <Label layoutX="311.0" layoutY="78.0" prefHeight="17.0" prefWidth="89.0" text="Query template:" />

@@ -1,5 +1,7 @@
 package com.leprechaun.solveig;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.leprechaun.solveig.entities.ResponseEntity;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -26,12 +28,14 @@ import com.leprechaun.solveig.entities.UserEntity;
 import java.util.ArrayList;
 import java.util.List;
 import com.leprechaun.solveig.entities.UserEntity;
+import com.leprechaun.solveig.http.RequestExecutor;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Separator;
+import com.leprechaun.solveig.json.JsonFormatter;
 
 public class FXMLController implements Initializable {
 
@@ -88,6 +92,10 @@ public class FXMLController implements Initializable {
     private ChoiceBox choiceDatabase;
     @FXML
     private ChoiceBox choiceQueryTemplate;
+    @FXML
+    private Button executeQueryButton;
+    @FXML
+    private TextArea jsonRepresent;
 
     //Data containers
     private ObservableList<UserEntity> usersDataList = FXCollections.observableArrayList();
@@ -231,7 +239,22 @@ public class FXMLController implements Initializable {
             }
         }
     }
-
+    
+    @FXML
+    private void executeRequest(ActionEvent event) {
+        ResponseEntity responseEntity = RequestExecutor.intermediateExcutor(hostField.getText(), portField.getText(), choiceDatabase.getSelectionModel().getSelectedItem().toString(), usernameField.getText(), passwordField.getText(), queryField.getText());
+        if (responseEntity.getCode().contains("200")) {
+            jsonRepresent.clear();
+            /*Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            String prettyJson = gson.toJson(responseEntity.getBody());
+            jsonRepresent.appendText(prettyJson);
+            System.out.print(prettyJson);*/
+            jsonRepresent.appendText(JsonFormatter.jsonFormatter(responseEntity.getBody()));
+        }    
+        outputConsole.appendText(queryField.getText() + ": " + responseEntity.getCode() + " " + responseEntity.getBody() + "\n");
+    }
+    
+    //NON-TAB CONTEXT
     //Clear output console
     @FXML
     private void clearOutputConsole(ActionEvent event) {
@@ -348,7 +371,7 @@ public class FXMLController implements Initializable {
         } catch (Exception e) {
             outputConsole.appendText("Error while loading connection settings \n");
         }
-
+        
         outputConsole.setEditable(false);
     }
 }
